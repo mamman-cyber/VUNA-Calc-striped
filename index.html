@@ -1,86 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calculator</title>
-  <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <title>Kura — Real-time last-mile tracking for African logistics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy-900: #0f172a;
+      --navy-800: #1e293b;
+      --navy-700: #334155;
+      --navy-600: #475569;
+      --navy-50: #f8fafc;
+      --amber-500: #f59e0b;
+      --amber-600: #d97706;
+      --amber-50: #fffbeb;
+      --white: #ffffff;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(15,23,42,.08), 0 1px 2px rgba(15,23,42,.06);
+      --shadow-lg: 0 10px 30px rgba(15,23,42,.1), 0 4px 8px rgba(15,23,42,.06);
+      --shadow-xl: 0 20px 50px rgba(15,23,42,.12);
+      --transition: .2s ease;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: var(--navy-700);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--amber-600); text-decoration: none; }
+    a:hover { color: var(--amber-500); }
+    img { max-width: 100%; display: block; }
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    nav .logo { font-size: 1.35rem; font-weight: 800; color: var(--navy-900); letter-spacing: -.02em; }
+    nav .logo span { color: var(--amber-500); }
+    nav .nav-links { display: flex; gap: 28px; align-items: center; }
+    nav .nav-links a { font-size: .875rem; font-weight: 500; color: var(--navy-600); transition: color var(--transition); }
+    nav .nav-links a:hover { color: var(--navy-900); }
+    .nav-cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--navy-900); color: var(--white);
+      font-size: .875rem; font-weight: 600;
+      padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .nav-cta:hover { background: var(--navy-800); color: var(--white); }
+    .mobile-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .mobile-toggle span { display: block; width: 22px; height: 2px; background: var(--navy-900); border-radius: 2px; transition: var(--transition); }
+
+    @media (max-width: 768px) {
+      nav .nav-links { display: none; flex-direction: column; position: fixed; top: 64px; left: 0; right: 0;
+        background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 16px 24px 24px; gap: 16px; }
+      nav .nav-links.open { display: flex; }
+      nav .nav-links a { font-size: 1rem; }
+      .mobile-toggle { display: flex; }
+    }
+
+    /* Buttons */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--amber-500); color: var(--navy-900);
+      font-size: 1rem; font-weight: 600; padding: 14px 32px;
+      border-radius: 10px; border: none; cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-primary:hover { background: var(--amber-600); color: var(--navy-900); transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent; color: var(--navy-900);
+      font-size: 1rem; font-weight: 600; padding: 14px 32px;
+      border-radius: 10px; border: 2px solid var(--navy-900); cursor: pointer;
+      transition: background var(--transition);
+    }
+    .btn-secondary:hover { background: var(--navy-50); }
+
+    /* Hero */
+    .hero {
+      padding: 140px 0 80px;
+      background: linear-gradient(135deg, var(--navy-900) 0%, #1a2a4a 100%);
+      color: var(--white); text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800;
+      line-height: 1.15; letter-spacing: -.03em; max-width: 800px; margin: 0 auto 20px;
+    }
+    .hero h1 span { color: var(--amber-500); }
+    .hero p {
+      font-size: 1.125rem; color: #94a3b8; max-width: 600px; margin: 0 auto 36px; line-height: 1.7;
+    }
+    .hero .btn-primary { font-size: 1.05rem; padding: 16px 40px; }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 48px; margin-top: 60px; flex-wrap: wrap;
+    }
+    .hero-stats div { text-align: center; }
+    .hero-stats strong { display: block; font-size: 1.75rem; font-weight: 800; color: var(--white); }
+    .hero-stats span { font-size: .85rem; color: #64748b; }
+
+    /* Section shared */
+    section { padding: 88px 0; }
+    .section-label {
+      display: inline-block; font-size: .75rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--amber-500); margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 800;
+      color: var(--navy-900); letter-spacing: -.02em; margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 1.05rem; color: var(--navy-600); max-width: 580px; line-height: 1.7;
+    }
+
+    /* Problem */
+    .problem { background: var(--navy-50); }
+    .problem-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px;
+    }
+    .problem-card {
+      background: var(--white); border-radius: var(--radius); padding: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+    .problem-card .icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--amber-50); display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; margin-bottom: 18px;
+    }
+    .problem-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy-900); margin-bottom: 8px; }
+    .problem-card p { font-size: .925rem; color: var(--navy-600); line-height: 1.65; }
+
+    @media (max-width: 768px) { .problem-grid { grid-template-columns: 1fr; } }
+
+    /* Features */
+    .features-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px; margin-top: 48px;
+    }
+    .feature-card { padding: 32px; border-radius: var(--radius); }
+    .feature-card .icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--navy-900); color: var(--white);
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 18px;
+    }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy-900); margin-bottom: 8px; }
+    .feature-card p { font-size: .925rem; color: var(--navy-600); line-height: 1.65; }
+
+    @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+
+    /* Testimonials */
+    .testimonials { background: var(--navy-50); }
+    .testimonial-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-top: 48px;
+    }
+    .testimonial-card {
+      background: var(--white); border-radius: var(--radius); padding: 36px;
+      box-shadow: var(--shadow-lg); position: relative;
+    }
+    .testimonial-card::before { content: '"'; position: absolute; top: 14px; left: 24px;
+      font-size: 4rem; line-height: 1; color: var(--amber-200); font-family: Georgia, serif; }
+    .testimonial-card blockquote { font-size: .975rem; color: var(--navy-700); line-height: 1.7;
+      margin-bottom: 20px; font-style: italic; }
+    .testimonial-card .author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-card .avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--amber-500); display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem; color: var(--navy-900);
+    }
+    .testimonial-card .name { font-weight: 600; font-size: .9rem; color: var(--navy-900); }
+    .testimonial-card .role { font-size: .8rem; color: var(--navy-600); }
+
+    @media (max-width: 768px) { .testimonial-grid { grid-template-columns: 1fr; } }
+
+    /* Pricing */
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; align-items: start;
+    }
+    .pricing-card {
+      background: var(--white); border-radius: var(--radius); padding: 36px; border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow); transition: box-shadow var(--transition), transform var(--transition);
+    }
+    .pricing-card:hover { box-shadow: var(--shadow-xl); transform: translateY(-3px); }
+    .pricing-card.featured {
+      border-color: var(--amber-500); border-width: 2px;
+      box-shadow: 0 0 0 1px var(--amber-500), var(--shadow-lg);
+      position: relative;
+    }
+    .pricing-card.featured::after {
+      content: 'Most popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--amber-500); color: var(--navy-900); font-size: .7rem; font-weight: 700;
+      padding: 4px 14px; border-radius: 20px; letter-spacing: .03em;
+    }
+    .pricing-card .plan { font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+      color: var(--navy-600); margin-bottom: 6px; }
+    .pricing-card .price { font-size: 2.25rem; font-weight: 800; color: var(--navy-900); margin-bottom: 4px; }
+    .pricing-card .price span { font-size: 1rem; font-weight: 500; color: var(--navy-600); }
+    .pricing-card .billing { font-size: .85rem; color: var(--navy-600); margin-bottom: 24px; }
+    .pricing-card ul { list-style: none; margin-bottom: 28px; }
+    .pricing-card ul li { font-size: .9rem; color: var(--navy-700); padding: 6px 0; display: flex; align-items: center; gap: 10px; }
+    .pricing-card ul li::before { content: "✓"; color: var(--amber-500); font-weight: 700; }
+    .pricing-card .btn-primary, .pricing-card .btn-secondary { width: 100%; justify-content: center; }
+
+    @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+
+    /* Footer */
+    footer {
+      background: var(--navy-900); color: #94a3b8; padding: 56px 0 32px;
+    }
+    footer .container { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+    footer h4 { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--white); margin-bottom: 16px; }
+    footer p { font-size: .875rem; line-height: 1.7; }
+    footer a { display: block; font-size: .875rem; color: #94a3b8; padding: 4px 0; transition: color var(--transition); }
+    footer a:hover { color: var(--white); }
+    footer .logo { font-size: 1.25rem; font-weight: 800; color: var(--white); margin-bottom: 8px; }
+    footer .logo span { color: var(--amber-500); }
+    footer .bottom { grid-column: 1 / -1; border-top: 1px solid #1e293b; padding-top: 24px;
+      margin-top: 16px; font-size: .825rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 768px) {
+      footer .container { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Utility */
+    .center { text-align: center; }
+    .center .section-sub { margin: 0 auto; }
+    .mt-8 { margin-top: 8px; }
+    .gap-12 { gap: 12px; }
+    .flex-center { display: flex; align-items: center; justify-content: center; }
+  </style>
 </head>
-
 <body>
-  <!-- Theme Toggle Button -->
-  <button class="btn btn-outline-secondary theme-toggle-btn" id="theme-toggle" onclick="toggleTheme()"
-    title="Toggle dark/light mode">
-    🌙
-  </button>
+
+<!-- Navigation -->
+<nav>
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-6 col-md-6 col-sm-8">
-        <div class="border border-dotted border-3 rounded-3 p-3 mb-4 bg-white bg-opacity-50">
-          <h4 class="text-center group-header mb-0">VUNA CALCULATOR</h4>
-          <p class="text-center text-small text-muted">
-            <i>Created by set 2025/26 Software Engineering</i>
-          </p>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card calculator-card">
-              <div class="card-body p-4">
-                <div class="calculator">
-                  <div class="display-container">
-                    <input type="text" class="form-control" id="result" placeholder="0" disabled />
-                  </div>
+    <div class="logo">K<span>U</span>RA</div>
+    <div class="nav-links" id="navLinks">
+      <a href="#problem">Problem</a>
+      <a href="#features">Features</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#pricing">Pricing</a>
+      <button class="nav-cta" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Book a Demo</button>
+    </div>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
 
-                  <div class="btn-grid">
-                    <button class="btn btn-light" onclick="bracketToResult('(')">(</button>
-                    <button class="btn btn-light" onclick="bracketToResult(')')">)</button>
-                    <button class="btn btn-light" onclick="backspace()">←</button>
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <h1>Know exactly where your deliveries are —<br />even when drivers don&rsquo;t have smartphones</h1>
+    <p>Kura uses SMS and USSD to track last-mile deliveries in real time across Nigeria, Ghana, and Kenya. No app install. No smartphone required.</p>
+    <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
+      Book a Demo &rarr;
+    </button>
+    <div class="hero-stats">
+      <div><strong>12,000+</strong><span>deliveries tracked daily</span></div>
+      <div><strong>98%</strong><span>driver adoption rate</span></div>
+      <div><strong>63%</strong><span>fewer customer follow-up calls</span></div>
+    </div>
+  </div>
+</section>
 
-                    <!-- Row trig -->
-                    <button class="btn btn-action" onclick="clearResult()">AC</button>
+<!-- Problem -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="center">
+      <span class="section-label">The problem</span>
+      <h2 class="section-title">You dispatch a truck this morning.<br />By noon, you have no idea where it is.</h2>
+      <p class="section-sub">Last-mile visibility is the biggest operational challenge for African logistics firms. Most tracking tools fail because they assume every driver has a smartphone.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">📱</div>
+        <h3>80% of drivers use feature phones</h3>
+        <p>GPS apps and WhatsApp tracking are useless when your drivers carry $20 phones. You&rsquo;re flying blind on the most critical leg of the delivery.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">📍</div>
+        <h3>WhatsApp locations aren&rsquo;t real time</h3>
+        <p>A shared pin tells you where the driver was, not where they are. By the time a customer calls to ask, you&rsquo;re scrambling to find out.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">📞</div>
+        <h3>Your ops team spends hours on follow-up calls</h3>
+        <p>Every &ldquo;Where is my delivery?&rdquo; phone call costs time and trust. Your customers deserve better — and so does your operations team.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-                    <!-- Row 2 -->
-                    <button class="btn btn-light" onclick="appendToResult(7)">7</button>
-                    <button class="btn btn-light" onclick="appendToResult(8)">8</button>
-                    <button class="btn btn-light" onclick="appendToResult(9)">9</button>
+<!-- Features -->
+<section id="features">
+  <div class="container">
+    <div class="center">
+      <span class="section-label">How Kura works</span>
+      <h2 class="section-title">Deliveries tracked by SMS.<br />Dashboard updated in real time.</h2>
+      <p class="section-sub">No smartphone, no data bundle, no problem. Kura works on every phone on every network.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">💬</div>
+        <h3>SMS Check-in</h3>
+        <p>Driver texts "OK" to a shortcode at each stop. Kura captures the location from the telco cell tower and updates the dashboard instantly. No data, no GPS, no app.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📟</div>
+        <h3>USSD Fallback</h3>
+        <p>If SMS fails, the driver dials a USSD code. A simple menu asks for delivery status via keypad input. Works on any phone — even phones that can&rsquo;t send SMS.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🗺️</div>
+        <h3>Real-time Dashboard</h3>
+        <p>Operations managers see every delivery on a live map. Status updates (Dispatched → In Transit → Delivered) appear automatically as drivers check in.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔔</div>
+        <h3>Auto-Customer Notifications</h3>
+        <p>Customers receive SMS updates when their delivery is 30 minutes away, has arrived, or is delayed. No more &ldquo;Where is my delivery?&rdquo; calls to your team.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-                    <!-- Row 3 -->
-                    <button class="btn btn-operator" onclick="operatorToResult('/')">÷</button>
-                    <button class="btn btn-light" onclick="appendToResult(4)">4</button>
-                    <button class="btn btn-light" onclick="appendToResult(5)">5</button>
-                    <button class="btn btn-light" onclick="appendToResult(6)">6</button>
-
-                    <!-- Row 4 -->
-                    <button class="btn btn-operator" onclick="operatorToResult('*')">×</button>
-                    <button class="btn btn-light" onclick="appendToResult(1)">1</button>
-                    <button class="btn btn-light" onclick="appendToResult(2)">2</button>
-                    <button class="btn btn-light" onclick="appendToResult(3)">3</button>
-
-                    <!-- Row 5 -->
-                    <button class="btn btn-operator" onclick="operatorToResult('+')">+</button>
-                    <button class="btn btn-light" onclick="appendToResult('.')">.</button>
-                    <button class="btn btn-light" onclick="appendToResult(0)">0</button>
-                    <button class="btn btn-operator" onclick="percentToResult('%')">%</button>
-                    
-                    <!-- Row 9 -->
-                    <button class="btn btn-operator" onclick="operatorToResult('-')">−</button>
-
-                    <button class="btn btn-equals" onclick="calculateResult()" style="grid-column: span 4;">=</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+<!-- Testimonials -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="center">
+      <span class="section-label">Trusted by logistics teams</span>
+      <h2 class="section-title">What operations managers are saying</h2>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <blockquote>Kura cut our &ldquo;Where is my delivery?&rdquo; calls by over 70% in the first month. Our drivers don&rsquo;t need smartphones — they just text &ldquo;OK&rdquo; at each stop and we see everything on the dashboard. It&rsquo;s that simple.</blockquote>
+        <div class="author">
+          <div class="avatar">CO</div>
+          <div>
+            <div class="name">Chidi Okonkwo</div>
+            <div class="role">Operations Director, SwiftLog Logistics — Lagos, Nigeria</div>
           </div>
-
-          <script src="assets/js/bootstrap.min.js"></script>
-          <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-          <script src="assets/js/script.js"></script>
-          <button id="scroll-to-calculator" title="Back to Calculator">↑</button>
         </div>
       </div>
+      <div class="testimonial-card">
+        <blockquote>We run 200+ deliveries a day across Greater Accra and Kumasi. Before Kura, tracking meant endless phone calls. Now our entire ops team shares one dashboard. The USSD fallback is a lifesaver when drivers are in low-signal areas.</blockquote>
+        <div class="author">
+          <div class="avatar">AM</div>
+          <div>
+            <div class="name">Ama Mensah</div>
+            <div class="role">Head of Logistics, TransCargo Ltd — Accra, Ghana</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+  <div class="container">
+    <div class="center">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-title">Simple pricing. No hidden fees.<br />Cancel anytime.</h2>
+      <p class="section-sub">All prices in Nigerian Naira. Annual billing available at 15% discount.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan">Starter</div>
+        <div class="price">₦150K <span>/mo</span></div>
+        <div class="billing">Up to 500 deliveries per month</div>
+        <ul>
+          <li>SMS &amp; USSD check-ins</li>
+          <li>Real-time dashboard</li>
+          <li>Customer SMS notifications</li>
+          <li>Email support</li>
+          <li>Single user account</li>
+        </ul>
+        <button class="btn-secondary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Get Started</button>
+      </div>
+      <div class="pricing-card featured">
+        <div class="plan">Growth</div>
+        <div class="price">₦350K <span>/mo</span></div>
+        <div class="billing">Up to 2,000 deliveries per month</div>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>Multi-location dashboard</li>
+          <li>Delivery history &amp; reports</li>
+          <li>Priority email &amp; phone support</li>
+          <li>Up to 5 user accounts</li>
+          <li>API access</li>
+        </ul>
+        <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Get Started</button>
+      </div>
+      <div class="pricing-card">
+        <div class="plan">Enterprise</div>
+        <div class="price">Custom</div>
+        <div class="billing">Unlimited deliveries</div>
+        <ul>
+          <li>Everything in Growth</li>
+          <li>Unlimited user accounts</li>
+          <li>Dedicated account manager</li>
+          <li>Custom integrations (ERP, WMS)</li>
+          <li>White-label SMS branding</li>
+          <li>SLA guarantee</li>
+        </ul>
+        <button class="btn-secondary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA / Demo -->
+<section style="background: var(--navy-900); padding: 80px 0; text-align: center;" id="demo">
+  <div class="container">
+    <span class="section-label" style="color: var(--amber-500);">Ready to get started?</span>
+    <h2 style="font-size: clamp(1.6rem, 3vw, 2.25rem); font-weight: 800; color: var(--white); letter-spacing: -.02em; margin-bottom: 16px;">
+      See Kura in action
+    </h2>
+    <p style="font-size: 1.05rem; color: #94a3b8; max-width: 520px; margin: 0 auto 36px; line-height: 1.7;">
+      Book a 20-minute demo tailored to your fleet size and routes. We&rsquo;ll show you exactly how Kura works for your team.
+    </p>
+    <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+      <button class="btn-primary">Book a Demo</button>
+      <button class="btn-secondary" style="border-color: var(--white); color: var(--white);" onclick="window.location.href='calculator/'">Try the Calculator</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div>
+      <div class="logo">K<span>U</span>RA</div>
+      <p>Real-time last-mile delivery tracking for African logistics companies. Works on every phone — no smartphone required.</p>
+      <p style="margin-top: 12px;">Lagos &middot; Accra &middot; Nairobi</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#">Integrations</a>
+      <a href="#">API</a>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <a href="#">About</a>
+      <a href="#">Blog</a>
+      <a href="#">Careers</a>
+      <a href="#">Contact</a>
+    </div>
+    <div>
+      <h4>Support</h4>
+      <a href="#">Help Center</a>
+      <a href="#">Documentation</a>
+      <a href="#">Status</a>
+      <a href="#">Privacy</a>
+    </div>
+    <div class="bottom">
+      <span>&copy; 2026 Kura Technologies Ltd. All rights reserved.</span>
+      <span>Built for African logistics.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('mobileToggle').addEventListener('click', function () {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+  document.querySelectorAll('#navLinks a').forEach(function (link) {
+    link.addEventListener('click', function () {
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
+</script>
 </body>
-
 </html>
-
