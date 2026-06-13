@@ -26,6 +26,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Prepare files for deployment
+        run: |
+          mkdir -p _deploy
+          cp -r index.html assets _deploy/
+
       - name: Upload via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -33,15 +38,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ${{ secrets.FTP_TARGET_DIR }}
-          local-dir: ./
-          exclude: |
-            .git*/
-            .gitignore
-            .dockerignore
-            node_modules/
-            test/
-            nginx/
-            .github/
-            *.md
-            package*.json
-            eslint.config.js
+          local-dir: _deploy/
