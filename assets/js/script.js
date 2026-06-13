@@ -202,3 +202,38 @@ function updatePreview() {
     el.classList.add("show");
   }
 }
+// ------------------------------
+// Download Calculation
+// ------------------------------
+function downloadCalculation() {
+  if (!currentExpression && LAST_RESULT === 0) {
+    alert("Nothing to download yet.");
+    return;
+  }
+
+  const now = new Date();
+  const timestamp = now.toLocaleString();
+
+  const result = calculateExpression(currentExpression);
+  const expression = currentExpression || "0";
+
+  const content = [
+    "VUNA CALCULATOR - Calculation Record",
+    "=====================================",
+    `Date     : ${timestamp}`,
+    `Expression: ${expression}`,
+    `Result   : ${result !== "Error" ? result : "Could not evaluate"}`,
+    "=====================================",
+    "Created by Set 2025/26 Software Engineering",
+  ].join("\n");
+
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `vuna-calc-${Date.now()}.txt`;
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
