@@ -29,7 +29,7 @@ jobs:
       - name: Prepare files for deployment
         run: |
           mkdir -p _deploy
-          cp -r index.html assets _deploy/
+          cp -r index.html assets calculator _deploy/
 
       - name: Upload via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
