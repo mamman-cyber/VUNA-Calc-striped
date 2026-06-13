@@ -7,6 +7,17 @@
   <title>Calculator</title>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    .display-container { position: relative; }
+    .preview-line {
+      position: absolute; bottom: 8px; right: 20px;
+      font-size: .85rem; color: #6c757d; opacity: 0;
+      transition: opacity .15s ease; pointer-events: none;
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .preview-line.show { opacity: 1; }
+    .dark-mode .preview-line { color: #adb5bd; }
+  </style>
 </head>
 
 <body>
@@ -32,6 +43,7 @@
                 <div class="calculator">
                   <div class="display-container">
                     <input type="text" class="form-control" id="result" placeholder="0" disabled />
+                    <div id="preview" class="preview-line"></div>
                   </div>
 
                   <div class="btn-grid">

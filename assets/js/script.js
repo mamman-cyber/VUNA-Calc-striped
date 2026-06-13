@@ -184,4 +184,21 @@ function calculateResult() {
 
 function updateResult() {
   document.getElementById("result").value = currentExpression || "0";
+  updatePreview();
+}
+
+function updatePreview() {
+  const el = document.getElementById("preview");
+  if (!el) return;
+  if (!currentExpression) {
+    el.classList.remove("show");
+    return;
+  }
+  const result = calculateExpression(currentExpression);
+  if (result === "Error") {
+    el.classList.remove("show");
+  } else {
+    el.textContent = "= " + result;
+    el.classList.add("show");
+  }
 }
