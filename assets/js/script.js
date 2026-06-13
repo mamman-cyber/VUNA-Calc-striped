@@ -2,7 +2,7 @@
 // 🧠 SMART RESULT MEMORY FEATURE
 // ===============================
 
-let LAST_RESULT = 0;
+var LAST_RESULT = 0;
 var currentExpression = "";
 
 // ------------------------------
@@ -87,14 +87,14 @@ function clearResult() {
 
 function normalizeExpression(expr) {
   return expr
+    .replace(/asinh\(/g, "asinh(")
+    .replace(/sinh\(/g, "sinh(")
     .replace(/asin\(/g, "asinDeg(")
     .replace(/acos\(/g, "acosDeg(")
     .replace(/atan\(/g, "atanDeg(")
     .replace(/sin\(/g, "sinDeg(")
     .replace(/cos\(/g, "cosDeg(")
     .replace(/tan\(/g, "tanDeg(")
-    .replace(/asinh\(/g, "asinh(")
-    .replace(/sinh\(/g, "sinh(")
     .replace(/\be\b/g, "Math.E")
     .replace(/\bpi\b/g, "Math.PI");
 }
